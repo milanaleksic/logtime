@@ -7,13 +7,11 @@ import (
 	"github.com/milanaleksic/logtime"
 	"log"
 	"os"
-	"regexp"
 )
 
 var (
-	logTimeLayout  string
-	logTimeMatcher *regexp.Regexp
-	inputFile      *os.File
+	logTimeLayout string
+	inputFile     *os.File
 )
 
 func init() {
@@ -24,7 +22,6 @@ func init() {
 	flag.Parse()
 
 	logTimeLayout = logTime
-	logTimeMatcher = logtime.FromLayoutToPatternMatcher(logTime)
 	if inputFileLocation != "" {
 		var err error
 		inputFile, err = os.Open(inputFileLocation)
@@ -42,14 +39,5 @@ func main() {
 		scanner = bufio.NewScanner(os.Stdin)
 		_, _ = fmt.Fprintln(os.Stderr, "Reading from stdin")
 	}
-	for scanner.Scan() {
-		text := scanner.Text()
-		moment := logtime.LogLineMoment(text, logTimeMatcher, logTimeLayout)
-		if moment != nil {
-			log.Println("Detected moment: ", moment)
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
+	logtime.NewLogTime(logTimeLayout).ReadStreamOfLogLines(scanner)
 }
