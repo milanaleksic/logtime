@@ -39,5 +39,8 @@ func main() {
 		scanner = bufio.NewScanner(os.Stdin)
 		_, _ = fmt.Fprintln(os.Stderr, "Reading from stdin")
 	}
-	logtime.NewLogTime(logTimeLayout).ReadStreamOfLogLines(scanner)
+	moments := logtime.NewLogTime(logTimeLayout).ReadStreamOfLogLines(scanner)
+	for _, moment := range *moments {
+		fmt.Printf("%f\t%s\n", moment.Duration.Seconds(), moment.Line)
+	}
 }

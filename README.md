@@ -8,23 +8,27 @@ text editor/spreadsheet program.
 ## Installation
 
 ```
-go get -u github.com/milanaleksic/logtime
+go get -u github.com/milanaleksic/logtime/cmd/logtime
 ```
 
 ## Usage
 
 ```
+$ logtime --help
+Usage of logtime:
+  -input-file string
+        which file to process (default - stdin)
+  -log-time string
+        pattern that should match beginning of all log lines (default "2006-01-02 15:04:05")
 ```
+
+> Note: read about the [time format layout used in Go language](https://golang.org/pkg/time/#Parse), 
+> that's the format expected by `log-time` argument
 
 ## Example
 
 Example with progress provided via `pv` utility
 
 ```bash
-pv -i 0.1 biglogfile.txt | gclog-cleaner \
-  --exclusions '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*\[GC' \
-  --exclusions "Creating an interceptor chain" \
-  --exclusions 'request:84' \
-  --exclusions 'DEBUG Sdk' \ 
-  > clean.txt
+pv -i 0.1 clean.txt | logtime > output.tsv
 ```

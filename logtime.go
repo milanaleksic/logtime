@@ -22,9 +22,9 @@ func NewLogTime(layout string) *LogTime {
 }
 
 type Moment struct {
-	t time.Time
-	l string
-	d time.Duration
+	Time     time.Time
+	Line     string
+	Duration time.Duration
 }
 
 func (lt *LogTime) logLineMoment(text string) *time.Time {
@@ -41,7 +41,7 @@ func (lt *LogTime) logLineMoment(text string) *time.Time {
 	}
 }
 
-func (lt *LogTime) ReadStreamOfLogLines(scanner *bufio.Scanner) {
+func (lt *LogTime) ReadStreamOfLogLines(scanner *bufio.Scanner) *[]Moment {
 	var moments = make([]Moment, 0)
 	for scanner.Scan() {
 		l := scanner.Text()
@@ -54,11 +54,11 @@ func (lt *LogTime) ReadStreamOfLogLines(scanner *bufio.Scanner) {
 				previousMoment = &moments[lenMoments-1]
 			}
 			if previousMoment != nil {
-				if previousMoment.t == *t {
+				if previousMoment.Time == *t {
 					moments[lenMoments-1] = newMoment
 				} else {
 					moments = append(moments, newMoment)
-					previousMoment.d = newMoment.t.Sub(previousMoment.t)
+					previousMoment.Duration = newMoment.Time.Sub(previousMoment.Time)
 				}
 			} else {
 				moments = append(moments, newMoment)
@@ -70,18 +70,16 @@ func (lt *LogTime) ReadStreamOfLogLines(scanner *bufio.Scanner) {
 	}
 	log.Printf("Detected %v distinct moments", len(moments))
 	sort.SliceStable(moments, func(i, j int) bool {
-		return moments[i].d > moments[j].d
+		return moments[i].Duration > moments[j].Duration
 	})
-	for _, moment := range moments {
-		fmt.Printf("%f\t%s", moment.d.Seconds(), moment.l)
-	}
+	return &moments
 }
 
 func NewMoment(t time.Time, l string) Moment {
 	return Moment{
-		t: t,
-		l: l,
-		d: 0,
+		Time:     t,
+		Line:     l,
+		Duration: 0,
 	}
 }
 
