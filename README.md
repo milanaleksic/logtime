@@ -30,5 +30,7 @@ Usage of logtime:
 Example with progress provided via `pv` utility
 
 ```bash
-pv -i 0.1 clean.txt | logtime > output.tsv
+pv -i 0.1 clean.txt | \
+    logtime \
+    > output.tsv
 ```
